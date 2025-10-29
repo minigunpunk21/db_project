@@ -8,18 +8,17 @@ WORKDIR /app
 # 1) только манифесты
 COPY package*.json ./
 
-# 2) ставим зависимости проекта
-#    + подсовываем rollup wasm (без записи в package.json)
-RUN if [ -f package-lock.json ]; then npm ci; else npm i; fi \
- && npm i -D --no-save @rollup/wasm-node
+# 2) Пинним совместимые версии для 32-битной сборки:
+#    - vite 4.x (работает с rollup 3)
+#    - rollup 3.x (JS-реализация, без нативных бинарей)
+RUN npm pkg set "devDependencies.vite"="4.5.3" \
+ && npm pkg set "devDependencies.rollup"="3.29.4" \
+ && if [ -f package-lock.json ]; then npm ci; else npm i; fi
 
 # 3) остальной код
 COPY . .
 
-# 4) говорим rollup использовать wasm-движок
-ENV ROLLUP_WASM=1
-
-# 5) сборка
+# 4) стандартная сборка
 RUN npm run build
 
 # --- runtime ---
