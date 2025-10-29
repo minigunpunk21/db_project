@@ -5,20 +5,22 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# 1) только манифесты
-COPY package*.json ./
+# 1) кладём только манифесты
+COPY package.json ./
+# если есть tsconfig, vite.config.* – скопируются на шаге ниже
 
-# 2) Пинним совместимые версии для 32-битной сборки:
-#    - vite 4.x (работает с rollup 3)
-#    - rollup 3.x (JS-реализация, без нативных бинарей)
-RUN npm pkg set "devDependencies.vite"="4.5.3" \
- && npm pkg set "devDependencies.rollup"="3.29.4" \
- && if [ -f package-lock.json ]; then npm ci; else npm i; fi
+# 2) пиним версии, совместимые с 32-битной сборкой
+RUN npm pkg set devDependencies.vite=4.5.3 \
+ && npm pkg set devDependencies.rollup=3.29.4 \
+ && npm pkg set devDependencies.esbuild=0.18.20
 
-# 3) остальной код
+# 3) ставим зависимости (генерируем новый lock внутри контейнера)
+RUN npm install
+
+# 4) кладём остальной код
 COPY . .
 
-# 4) стандартная сборка
+# 5) билд фронта
 RUN npm run build
 
 # --- runtime ---
