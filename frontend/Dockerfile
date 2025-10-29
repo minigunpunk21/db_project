@@ -5,15 +5,21 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# 1) только манифесты → установка dev-зависимостей (vite входит сюда)
+# 1) только манифесты
 COPY package*.json ./
-# если есть lock: оставьте npm ci, иначе используйте npm i
-RUN if [ -f package-lock.json ]; then npm ci; else npm i; fi
 
-# 2) остальной код
+# 2) ставим зависимости проекта
+#    + подсовываем rollup wasm (без записи в package.json)
+RUN if [ -f package-lock.json ]; then npm ci; else npm i; fi \
+ && npm i -D --no-save @rollup/wasm-node
+
+# 3) остальной код
 COPY . .
 
-# сборка
+# 4) говорим rollup использовать wasm-движок
+ENV ROLLUP_WASM=1
+
+# 5) сборка
 RUN npm run build
 
 # --- runtime ---
