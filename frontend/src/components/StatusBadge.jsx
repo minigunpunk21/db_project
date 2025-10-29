@@ -1,0 +1,3 @@
+import React from 'react'
+const map = { todo:'border-slate-300 bg-slate-100 text-slate-700', in_progress:'border-blue-300 bg-blue-50 text-blue-700', review:'border-purple-300 bg-purple-50 text-purple-700', blocked:'border-red-300 bg-red-50 text-red-700', done:'border-emerald-300 bg-emerald-50 text-emerald-700' }
+export default function StatusBadge({ value }){ return <span className={`badge ${map[value] || 'border-slate-200'}`}>{String(value).replace('_',' ')}</span> }
