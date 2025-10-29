@@ -7,14 +7,17 @@ RUN apt-get update \
 ENV NODE_ENV=production
 WORKDIR /app
 
+# зависимости отдельно — кеш
 COPY package.json ./
-# COPY package-lock.json ./   # если есть — раскомментируй
+# если есть lock — раскомментируйте:
+# COPY package-lock.json ./
 RUN npm i --omit=dev
 
+# исходники
 COPY src ./src
 
 ENV PORT=3001
 EXPOSE 3001
 
 ENTRYPOINT ["/usr/bin/tini","--"]
-CMD ["node","src/server.js"]   # поменяй, если у тебя другой entrypoint
+CMD ["node","src/server.js"]   # поменяйте, если у вас другой entrypoint

@@ -42,11 +42,13 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_URL: "/api"     # фронт будет стучаться в /api
     container_name: tm-frontend
     depends_on:
       - backend
     ports:
-      - "8080:80"     # внешний nginx будет проксировать сюда
+      - "8080:80"                # внешний nginx проксирует сюда корень сайта
     restart: unless-stopped
 
 volumes:

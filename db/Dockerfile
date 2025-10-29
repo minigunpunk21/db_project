@@ -4,7 +4,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends mariadb-server mariadb-client ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-# слушаем все интерфейсы для связи в docker-сети
+# слушаем все интерфейсы для docker-сети
 RUN sed -ri 's/^(bind-address\s*=).*/\1 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf && \
     printf "\n[mysqld]\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\n" \
       > /etc/mysql/mariadb.conf.d/99-charset.cnf

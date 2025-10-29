@@ -22,7 +22,6 @@ if [ ! -d "$DATADIR/mysql" ]; then
     echo "FLUSH PRIVILEGES;"
   } > "$INITSQL"
 
-  # Подхватываем все .sql из /docker-entrypoint-initdb.d
   if [ -d "$INITDIR" ]; then
     for f in $(ls -1 "$INITDIR"/*.sql 2>/dev/null || true); do
       echo "USE \`$MYSQL_DATABASE\`;" >> "$INITSQL"
@@ -31,7 +30,6 @@ if [ ! -d "$DATADIR/mysql" ]; then
     done
   fi
 
-  # пароль root (если задан)
   if [ -n "$MYSQL_ROOT_PASSWORD" ]; then
     {
       echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
